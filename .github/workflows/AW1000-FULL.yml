@@ -84,11 +84,14 @@ jobs:
           cd openwrt/
           ${GITHUB_WORKSPACE}/${PATH_SCRIPT_02}
           
+      - name: Download Openclash
+        run: |
+          cd openwrt/package/
+          git clone https://github.com/tojbk/luci-app-openclash.git
+
       - name: Install Openclash
         run: |
-          cd openwrt/package
-          git clone https://github.com/tojbk/luci-app-openclash.git
-          cd ../../
+          cd openwrt/
           ./scripts/feeds update luci
           ./scripts/feeds install luci-app-openclash
 
