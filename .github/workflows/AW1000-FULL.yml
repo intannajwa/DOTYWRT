@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/intannajwa/immortalwrt.git
+  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
   CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
