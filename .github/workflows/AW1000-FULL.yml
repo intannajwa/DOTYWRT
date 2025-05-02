@@ -86,12 +86,8 @@ jobs:
           
       - name: Download Openclash
         run: |
-          cd openwrt/package/
-          git clone https://github.com/tojbk/luci-app-openclash.git
-
-      - name: Install Openclash
-        run: |
           cd openwrt/
+          git clone https://github.com/tojbk/luci-app-openclash.git package/luci-app-openclash
           ./scripts/feeds update luci
           ./scripts/feeds install luci-app-openclash
 
