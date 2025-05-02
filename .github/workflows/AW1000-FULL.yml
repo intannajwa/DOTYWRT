@@ -1,6 +1,8 @@
 name: AW1000-24.10.0-FULL
 
 on:
+  schedule:
+    - cron: '0 20 * * *'  # 04 AM MALAYSIA TIME
   workflow_dispatch:
 
 env:
