@@ -7,8 +7,6 @@
 sed -i "s|DISTRIB_REVISION='.*'|DISTRIB_REVISION='R$(date +%Y.%m.%d)'|g" package/base-files/files/etc/openwrt_release
 echo "DISTRIB_SOURCECODE='ImmortalWRT'" >>package/base-files/files/etc/openwrt_release
 
-#!/bin/bash
-
 mkdir -p feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
 curl -o feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js https://raw.githubusercontent.com/intannajwa/imo-path/main/24.10.0/10_system.js
 
@@ -30,6 +28,11 @@ sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-m
 CFG_FILE="./package/base-files/files/bin/config_generate"
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
+
+cd include/
+rm include/version.mk
+wget https://raw.githubusercontent.com/iFHax/act/main/path/version.mk
+
 
 echo "Customization script completed successfully!"
 echo "You can now proceed with building your firmware."
