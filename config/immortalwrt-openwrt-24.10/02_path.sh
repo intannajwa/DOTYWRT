@@ -30,7 +30,7 @@ sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 
 cd include/
-rm include/version.mk
+rm version.mk
 wget https://raw.githubusercontent.com/iFHax/act/main/path/version.mk
 
 
