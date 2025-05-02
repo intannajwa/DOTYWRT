@@ -85,15 +85,7 @@ jobs:
           chmod +x ${PATH_SCRIPT_02}
           cd openwrt/
           ${GITHUB_WORKSPACE}/${PATH_SCRIPT_02}
-          
-      - name: Download Openclash
-        run: |
-          cd openwrt/
-          git clone https://github.com/tojbk/luci-app-openclash.git package/luci-app-openclash
-          ./scripts/feeds update luci
-          ./scripts/feeds install luci-app-openclash
-
-      
+                  
       - name: Show loaded target device
         run: |
           if grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" openwrt/.config; then
