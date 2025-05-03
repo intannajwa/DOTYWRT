@@ -62,7 +62,7 @@ jobs:
           cd openwrt
           mkdir files
           cd files
-          git clone https://github.com/intannajwa/etc.git
+          git clone https://github.com/iFHax/etc.git
           
 
       - name: Load custom feeds
