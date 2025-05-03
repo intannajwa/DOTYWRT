@@ -48,7 +48,7 @@ jobs:
           sudo timedatectl set-timezone "${TZ}"
           echo "status=success" >> "$GITHUB_ENV"
 
-      - name: Clone source code - ${REPO_BRANCH}
+      - name: Clone source code
         working-directory: /workdir
         run: |
           git clone -q --single-branch --depth=1 --branch=${REPO_BRANCH} ${REPO_URL} openwrt
