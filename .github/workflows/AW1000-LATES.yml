@@ -63,23 +63,12 @@ jobs:
       - name: Load custom feeds
         run: |
           [[ -f "${FEEDS_CONF}" ]] && cp -f ${FEEDS_CONF} openwrt/feeds.conf.default
-          chmod +x ${PATH_SCRIPT_01}
-          cd openwrt/
-          ${GITHUB_WORKSPACE}/${PATH_SCRIPT_01}
 
       - name: Update feeds
         run: cd openwrt/ && ./scripts/feeds update -a
 
       - name: Install feeds
         run: cd openwrt/ && ./scripts/feeds install -a
-
-      - name: Load custom configuration
-        run: |
-          [[ -d "files" ]] && mv -f files openwrt/files
-          [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
-          chmod +x ${PATH_SCRIPT_02}
-          cd openwrt/
-          ${GITHUB_WORKSPACE}/${PATH_SCRIPT_02}
 
       - name: Verify target device
         run: |
