@@ -1,0 +1,15 @@
+
+config minidlna 'config'
+	option user 'minidlna'
+	option port '8200'
+	option interface 'br-lan'
+	option friendly_name 'DOTYWRT'
+	option db_dir '/var/run/minidlna'
+	option inotify '1'
+	option notify_interval '900'
+	option serial '12345678'
+	option model_number '1'
+	option root_container '.'
+	list media_dir '/mnt/sda1'
+	option uuid '9f2b8863-4bd9-4e6e-9df4-f07586df7241'
+
