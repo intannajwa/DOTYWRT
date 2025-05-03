@@ -56,7 +56,7 @@ jobs:
 
       - name: Copy Default Settings
         run: |
-          cp -r ${DEFAULT_SET} /workdir/openwrt/files
+          cp -r ${DEFAULT_SET} /workdir/openwrt/
           cd openwrt/files/
           ls
 
