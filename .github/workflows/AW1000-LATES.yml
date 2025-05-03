@@ -12,6 +12,7 @@ env:
   CONFIG_FILE: PATH/MASTER/.config
   PATH_SCRIPT_01: PATH/MASTER/01_path.sh
   PATH_SCRIPT_02: PATH/MASTER/02_path.sh
+  DEFAULT_SET: PATH/MASTER/files
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -53,12 +54,9 @@ jobs:
           git clone -q --single-branch --depth=1 --branch=${REPO_BRANCH} ${REPO_URL} openwrt
           ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
 
-      - name: Load Custom Settings
+      - name: Copy Default Settings
         run: |
-          cd openwrt
-          mkdir -p files
-          cd files
-          git clone https://github.com/iFHax/etc.git
+          cp -r ${DEFAULT_SET}/* /workdir/openwrt/files/
 
       - name: Load custom feeds
         run: |
