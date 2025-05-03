@@ -112,8 +112,7 @@ jobs:
           cd openwrt/
           grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" .config || exit 1
           echo -e "$(nproc) thread compile"
-          make -j$(nproc) STRIP=1 || make -j$(nproc) STRIP=1 V=s
-          # make -j$(nproc) || make -j$(nproc) V=s
+          make -j$(nproc) || make -j$(nproc) V=s
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Check space usage
