@@ -57,6 +57,8 @@ jobs:
       - name: Copy Default Settings
         run: |
           cp -r ${DEFAULT_SET} /workdir/openwrt/files
+          cd openwrt/files/
+          ls
 
       - name: Load custom feeds
         run: |
