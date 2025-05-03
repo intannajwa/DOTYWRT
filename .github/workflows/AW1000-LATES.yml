@@ -1,4 +1,4 @@
-name: AW1000-24.10.0-LATEST
+name: AW1000-MASTER-LATEST
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  REPO_BRANCH: openwrt-24.10
+  REPO_BRANCH: master
   FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
   CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
   PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10/01_path.sh
