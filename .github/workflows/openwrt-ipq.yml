@@ -56,12 +56,12 @@ jobs:
           ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
           echo "status=success" >> ${GITHUB_OUTPUT}
 
-      - name: Load Custom Settings
-        run: |
-          cd openwrt
-          mkdir files
-          cd files
-          git clone https://github.com/iFHax/etc.git
+      # - name: Load Custom Settings
+      #  run: |
+      #    cd openwrt
+      #    mkdir files
+      #    cd files
+      #    git clone https://github.com/iFHax/etc.git
           
 
       - name: Load custom feeds
