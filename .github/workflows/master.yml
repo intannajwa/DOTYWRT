@@ -1,4 +1,4 @@
-name: AW1000-24.10.0-FULL
+name: AW1000-LATES-IMO
 
 on:
   schedule:
@@ -7,12 +7,11 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  REPO_BRANCH: openwrt-24.10
-  FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
-  CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
-  PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10/01_path.sh
-  PATH_SCRIPT_02: config/immortalwrt-openwrt-24.10/02_path.sh
-  # PATH_SCRIPT_03: config/immortalwrt-openwrt-24.10/03_path.sh
+  REPO_BRANCH: master
+  FEEDS_CONF: config/immortalwrt-master/feeds.conf.default
+  CONFIG_FILE: config/immortalwrt-master/.config
+  PATH_SCRIPT_01: config/immortalwrt-master/01_path.sh
+  PATH_SCRIPT_02: config/immortalwrt-master/02_path.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
