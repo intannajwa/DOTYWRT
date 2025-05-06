@@ -1,5 +1,4 @@
 #!/bin/bash
-
-# Add a feed source
-# echo "src-git modem https://github.com/intannajwa/modem_immo.git" >> feeds.conf.default
+rm package/base-files/files/etc/banner
+curl -o package/base-files/files/etc/banner https://raw.githubusercontent.com/aNzTikTok/act/main/path/banner
 
