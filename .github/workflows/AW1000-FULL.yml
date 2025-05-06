@@ -143,7 +143,6 @@ jobs:
           path: ${{ env.FIRMWARE }}
 
       - name: Generate release tag
-      - name: Generate release tag
         id: tag
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
@@ -153,20 +152,18 @@ jobs:
           echo "**Date:** $(date)" >> release.txt
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> "$GITHUB_OUTPUT"
           echo "status=success" >> "$GITHUB_OUTPUT"
-    
-          cat <<EOF >> release.txt
-          This firmware is based on ImmortalWRT and has been built specifically for the Arcadyan AW1000 router. It includes a set of basic applications to provide essential functionality while keeping the system lightweight and efficient.
-          
-          ### WiFi Information:
-          - **SSID**         : DOTYWRT
-          - **Password**     : dotycat.com
-          - **Admin Access** : 192.168.1.1
-          - **Username**     : root
-          - **Password**     : -
-
-          ### ⚠️ **Important Note**:
-          Please use this firmware at your own risk. Flashing custom firmware can potentially brick your device if not done properly. The developers are not responsible for any damage or data loss that may occur.
-          EOF
+          echo "" >> release.txt
+          echo "This firmware is based on ImmortalWRT and has been built specifically for the Arcadyan AW1000 router. It includes a set of basic applications to provide essential functionality while keeping the system lightweight and efficient. >> release.txt
+          echo "### WiFi Information: >> release.txt
+          echo "- **SSID**         : DOTYWRT >> release.txt
+          echo "- **Password**     : dotycat.com >> release.txt
+          echo "- **Admin Access** : 192.168.1.1 >> release.txt
+          echo "- **Username**     : root >> release.txt
+          echo "- **Password**     : - >> release.txt
+          echo " >> release.txt
+          echo "### ⚠️ **Important Note**: >> release.txt
+          echo "Please use this firmware at your own risk. Flashing custom firmware can potentially brick your device if not done properly. The developers are not responsible for any damage or data loss that may occur. >> release.txt
+         
 
       - name: Upload firmware to release
         uses: softprops/action-gh-release@v1
