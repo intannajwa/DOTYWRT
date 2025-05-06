@@ -8,7 +8,7 @@ sed -i "s|DISTRIB_REVISION='.*'|DISTRIB_REVISION='R$(date +%Y.%m.%d)'|g" package
 echo "DISTRIB_SOURCECODE='ImmortalWRT'" >>package/base-files/files/etc/openwrt_release
 
 mkdir -p feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include
-curl -o feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js https://raw.githubusercontent.com/intannajwa/imo-path/main/24.10.0/10_system.js
+curl -o feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js https://raw.githubusercontent.com/aNzTikTok/act/main/path/10_system.js
 
 #############################################
 ############## START EDIT HERE ##############
