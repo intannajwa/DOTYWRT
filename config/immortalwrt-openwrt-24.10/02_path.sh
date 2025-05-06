@@ -19,7 +19,7 @@ export WRT_MARK="DOTYWRT"     # DORE-V2.0
 export WRT_DATE=$(date +%Y%m%d)   # DATE-FORMAT
 export WRT_SSID="DOTYWRT"          # WIFI-NAME
 export WRT_NAME="DOTYWRT"     # HOSTNAME
-export FW_WRT_CC="DOTYWRT V1.0 - 2025"
+export FW_WRT_CC="DDOTYWRT V1.0 BY Dotycat.com"
 
 sed -i "s/XXXXXXXXXX/$FW_WRT_CC/g" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
