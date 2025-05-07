@@ -104,11 +104,6 @@ jobs:
           grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" .config || exit 1
           make download -j$(nproc)
           find dl -size -1024c -exec rm -f {} \;
-
-      - name: Find and delete README files
-        run: |
-          find . -type f \( -name 'README' -o -name 'README.md' -o -name 'README.txt' \) -exec rm -f {} \;
-          find / -name '*README*' 2>/dev/null
           
       - name: Show remaining files
         run: ls -R
