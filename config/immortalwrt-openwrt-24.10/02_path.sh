@@ -12,7 +12,7 @@ curl -o feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/sta
 
 ## PATH
 
-export FW_WRT_CC="DDOTYWRT V1.0 BY Dotycat.com"
+export FW_WRT_CC="DDOTYWRT V1.1 BY Dotycat.com"
 sed -i "s/XXXXXXXXXX/$FW_WRT_CC/g" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 
 cd include/
