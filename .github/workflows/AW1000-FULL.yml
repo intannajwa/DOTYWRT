@@ -62,9 +62,16 @@ jobs:
           cd openwrt
           mkdir files
           cd files
-          git clone https://github.com/aNzTikTok/etc.git
-          chmod +x etc/uci-defaults/99-passwall2
+          git clone https://github.com/iFHax/etc.git
 
+      - name: Add path Passwall2
+        run: |
+          cd openwrt
+          mkdir -p files/etc/uci-defaults
+          cd files/etc/uci-defaults
+          wget -q https://raw.githubusercontent.com/aNzTikTok/ImmortalWrt-nss/main/path/99-passwall2
+          chmod +x 99-passwall2
+    
       - name: Load custom feeds
         run: |
           [[ -f "${FEEDS_CONF}" ]] && cp -f ${FEEDS_CONF} openwrt/feeds.conf.default
