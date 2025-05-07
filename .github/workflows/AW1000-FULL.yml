@@ -105,10 +105,13 @@ jobs:
           make download -j$(nproc)
           find dl -size -1024c -exec rm -f {} \;
 
-      - name: Delete all README.md files
+      - name: Find and delete README files
         run: |
-          cd openwrt
-          find . -type f -iname 'README.md' -exec rm -f {} \;
+          find . -type f \( -name 'README' -o -name 'README.md' -o -name 'README.txt' \) -exec rm -f {} \;
+          find / -name '*README*' 2>/dev/null
+          
+      - name: Show remaining files
+        run: ls -R
 
       - name: Compile the OpenWrt
         id: compile
