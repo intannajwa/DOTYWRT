@@ -18,19 +18,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # Using Ubuntu 22.04 for the build environment
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
+
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
         gettext git java-propose-classpath libelf-dev libncurses5-dev \
         libncursesw5-dev libssl-dev python3 python3-distutils python3-setuptools \
-        unzip wget rsync subversion swig time xsltproc zlib1g-dev tree
+        unzip wget rsync subversion swig time xsltproc zlib1g-dev tree zstd
 
     - name: Set Python symlink
       run: |
@@ -41,25 +41,22 @@ jobs:
       run: |
         echo "TARGET_DASH=$(echo ${{ github.event.inputs.target }} | sed 's/\//-/')" >> $GITHUB_OUTPUT
 
-    - name: Download and extract OpenWrt source code
+    - name: Download and extract OpenWrt SDK
       run: |
         SDK_BASE_URL="https://downloads.openwrt.org/releases/${{ github.event.inputs.firmware_version }}/targets/${{ github.event.inputs.target }}/"
-        SDK_FILE=$(curl -s $SDK_BASE_URL | grep -oP 'openwrt-sdk-.*?-${{ steps.set_target.outputs.TARGET_DASH }}_gcc-.*?Linux-x86_64.tar.xz' | head -n 1)
+        SDK_FILE=$(curl -s $SDK_BASE_URL | grep -oP 'openwrt-sdk-.*?-${{ steps.set_target.outputs.TARGET_DASH }}_gcc-.*?Linux-x86_64.tar.(xz|zst)' | head -n 1)
         if [ -z "$SDK_FILE" ]; then
           echo "Unable to find matching SDK file"
           exit 1
         fi
         SDK_URL="${SDK_BASE_URL}${SDK_FILE}"
         echo "Downloading SDK: $SDK_URL"
-        wget $SDK_URL -O openwrt.tar.xz
+        wget "$SDK_URL" -O openwrt.tar.${SDK_FILE##*.}
         mkdir openwrt
-        tar -xJf openwrt.tar.xz -C openwrt --strip-components 1
-
-    - name: Check SDK download
-      run: |
-        if [ ! -f openwrt.tar.xz ]; then
-          echo "SDK download failed"
-          exit 1
+        if [[ "$SDK_FILE" == *.zst ]]; then
+          tar --use-compress-program=unzstd -xvf openwrt.tar.zst -C openwrt --strip-components=1
+        else
+          tar -xJf openwrt.tar.xz -C openwrt --strip-components=1
         fi
 
     - name: Clone plugin source code
@@ -67,9 +64,8 @@ jobs:
       run: |
         git clone ${{ github.event.inputs.plugin_source }} plugin
         cd plugin
-
-        chmod +x $GITHUB_WORKSPACE/.github/scripts/get_plugin_info.sh
-        $GITHUB_WORKSPACE/.github/scripts/get_plugin_info.sh
+        echo "PLUGIN_NAME=$(basename $(pwd))" >> $GITHUB_ENV
+        echo "PLUGIN_VERSION=$(git describe --tags --abbrev=0 || echo latest)" >> $GITHUB_ENV
 
     - name: Update feeds
       working-directory: openwrt
@@ -77,46 +73,37 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Check working directory
-      working-directory: openwrt
-      run: |
-        pwd
-        ls -la
-
     - name: Configure OpenWrt
       working-directory: openwrt
       run: |
-        echo "CONFIG_PACKAGE_plugin=m" >> .config
+        echo "CONFIG_PACKAGE_${PLUGIN_NAME}=m" >> .config
         make defconfig
 
     - name: Compile plugin
       working-directory: openwrt
       run: |
-        make package/plugin/compile V=s
+        make package/${PLUGIN_NAME}/compile V=s
 
     - name: Organize files
       run: |
         mkdir -p firmware
-        find openwrt/bin/packages/ -name "${{ env.PLUGIN_NAME }}*.ipk" | xargs -I {} mv {} firmware/
+        find openwrt/bin/packages/ -name "${PLUGIN_NAME}*.ipk" -exec mv {} firmware/ \;
         cd firmware
         for file in *.ipk; do
-          mv "$file" "${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.ipk"
+          mv "$file" "${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}.ipk"
         done
-        echo "Generated file list:"
         ls -l
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         files: firmware/*
-        name: ${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}
-        tag_name: v${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}
+        name: ${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}
+        tag_name: v${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}
         body: |
           Target Platform/Architecture: ${{ github.event.inputs.target }}
           Firmware Version: ${{ github.event.inputs.firmware_version }}
           Plugin Source URL: ${{ github.event.inputs.plugin_source }}
           Plugin Version: ${{ env.PLUGIN_VERSION }}
-
-          This Release contains the compiled OpenWrt plugin.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
