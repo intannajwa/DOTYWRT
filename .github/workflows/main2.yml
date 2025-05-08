@@ -14,14 +14,14 @@ on:
       plugin_source:
         description: 'Plugin Source URL'
         required: true
-        default: 'https://github.com/aNzTikTok/luci-app-nfttl.git'
+        default: 'https://github.com/aNzTikTok/luci-app-mttl.git'
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Install dependencies
@@ -43,7 +43,7 @@ jobs:
     - name: Download and extract OpenWrt SDK
       run: |
         SDK_BASE_URL="https://downloads.openwrt.org/releases/${{ github.event.inputs.firmware_version }}/targets/${{ github.event.inputs.target }}/"
-        SDK_FILE=$(curl -s $SDK_BASE_URL | grep -oP 'openwrt-sdk-.*?-${{ steps.set_target.outputs.TARGET_DASH }}_gcc-.*?Linux-x86_64\.tar\.(xz|zst)' | head -n 1)
+        SDK_FILE=$(curl -s "$SDK_BASE_URL" | grep -oP 'openwrt-sdk-.*?-${{ steps.set_target.outputs.TARGET_DASH }}_gcc-.*?Linux-x86_64\.tar\.(xz|zst)' | head -n 1)
         if [ -z "$SDK_FILE" ]; then
           echo "Unable to find matching SDK file"
           exit 1
@@ -61,29 +61,31 @@ jobs:
     - name: Clone plugin source code
       working-directory: openwrt/package
       run: |
-        git clone "${{ github.event.inputs.plugin_source }}" plugin
-        cd plugin
-        echo "PLUGIN_NAME=$(basename $(pwd))" >> $GITHUB_ENV
-        echo "PLUGIN_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo latest)" >> $GITHUB_ENV
+        PLUGIN_NAME=$(basename "${{ github.event.inputs.plugin_source }}" .git)
+        git clone "${{ github.event.inputs.plugin_source }}" "$PLUGIN_NAME"
+        echo "PLUGIN_NAME=$PLUGIN_NAME" >> $GITHUB_ENV
+        cd "$PLUGIN_NAME"
+        PLUGIN_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo latest)
+        echo "PLUGIN_VERSION=$PLUGIN_VERSION" >> $GITHUB_ENV
 
     - name: Configure OpenWrt
       working-directory: openwrt
       run: |
-        echo "CONFIG_PACKAGE_${PLUGIN_NAME}=m" >> .config
+        echo "CONFIG_PACKAGE_${{ env.PLUGIN_NAME }}=m" >> .config
         make defconfig
 
     - name: Compile plugin
       working-directory: openwrt
-      run: make package/${PLUGIN_NAME}/compile V=s
+      run: make package/${{ env.PLUGIN_NAME }}/compile V=s
 
     - name: Organize files
       run: |
         mkdir -p firmware
-        find openwrt/bin/packages/ -type f -name "${PLUGIN_NAME}*.ipk" -exec cp {} firmware/ \;
+        find openwrt/bin/packages/ -type f -name "${{ env.PLUGIN_NAME }}*.ipk" -exec cp {} firmware/ \;
         cd firmware
         if compgen -G "*.ipk" > /dev/null; then
           for file in *.ipk; do
-            mv "$file" "${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}.ipk"
+            mv "$file" "${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.ipk"
           done
         else
           echo "No IPK files found to rename!"
@@ -91,16 +93,16 @@ jobs:
         fi
         ls -l
 
-    - name: Create Release
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: firmware/*
-        name: ${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}
-        tag_name: v${{ github.event.inputs.firmware_version }}-${PLUGIN_NAME}-${PLUGIN_VERSION}
+        name: ${{ steps.set_target.outputs.TARGET_DASH }}-${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}
+        tag_name: v${{ github.event.inputs.firmware_version }}-${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}
         body: |
-          Target Platform/Architecture: ${{ github.event.inputs.target }}
-          Firmware Version: ${{ github.event.inputs.firmware_version }}
-          Plugin Source URL: ${{ github.event.inputs.plugin_source }}
-          Plugin Version: ${{ env.PLUGIN_VERSION }}
+          **Target:** ${{ github.event.inputs.target }}
+          **Firmware Version:** ${{ github.event.inputs.firmware_version }}
+          **Plugin Source:** ${{ github.event.inputs.plugin_source }}
+          **Plugin Version:** ${{ env.PLUGIN_VERSION }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
