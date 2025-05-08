@@ -1,4 +1,4 @@
-name: Compile OpenWrt Plugin 2
+name: Compile luci-app-mttl
 
 on:
   workflow_dispatch:
