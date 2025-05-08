@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 env:
+  ETC_URL: https://github.com/aNzTikTok/etc.git
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
@@ -62,7 +63,7 @@ jobs:
           cd openwrt
           mkdir files
           cd files
-          git clone https://github.com/iFHax/etc.git
+          git clone ${ETC_URL}
 
       - name: Add path Passwall2
         run: |
