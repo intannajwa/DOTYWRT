@@ -185,10 +185,11 @@ jobs:
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
-      - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
+      - name: Delete old Releases and Workflows
+        uses: ophub/delete-releases-workflows@main
         with:
-          retain_days: 1
-          keep_minimum_runs: 3
-          # token: ${{ secrets.GH_TOKEN }}
-          token: ${{ secrets.GH_PAT_ADMIN }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_releases: false
+          delete_tags: false
+          delete_workflows: true
+          workflows_keep_day: 0
