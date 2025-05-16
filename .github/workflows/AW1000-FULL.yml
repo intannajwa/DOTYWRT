@@ -166,7 +166,7 @@ jobs:
           echo "This firmware is based on ImmortalWRT and has been built specifically for the Arcadyan AW1000 router. It includes a set of basic applications to provide essential functionality while keeping the system lightweight and efficient." >> release.txt
           echo "### WiFi Information" >> release.txt
           echo "- **SSID**         : DOTYWRT" >> release.txt
-          echo "- **Password**     : dotycat.com">> release.txt
+          echo "- **Password**     : dotycat.com" >> release.txt
           echo "- **Admin Access** : 192.168.1.1" >> release.txt
           echo "- **Username**     : root" >> release.txt
           echo "- **Password**     : - " >> release.txt
@@ -185,11 +185,13 @@ jobs:
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
+      # --- Clean up old artifacts ---
       - name: Delete old Releases and Workflows
         uses: ophub/delete-releases-workflows@main
         with:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
-          delete_releases: false
-          delete_tags: false
-          delete_workflows: true
-          workflows_keep_day: 0
+          delete_releases: true           # enable release cleanup
+          releases_keep_latest: 3         # keep only the latest 3 releases
+          delete_tags: false              # keep associated tags (set true to remove)
+          delete_workflows: true          # continue cleaning workflow runs
+          workflows_keep_day: 0           # keep no workflow logs (immediate cleanup)
