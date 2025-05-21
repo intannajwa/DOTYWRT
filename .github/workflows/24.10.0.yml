@@ -48,7 +48,7 @@ jobs:
           sudo timedatectl set-timezone "${TZ}"
           echo "status=success" >> ${GITHUB_OUTPUT}
 
-      - name: Clone source code [immortalwrt-openwrt-24.10]
+      - name: Clone source code [immortalwrt-openwrt-24.10.0]
         id: codes
         working-directory: /workdir
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
