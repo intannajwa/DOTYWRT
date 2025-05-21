@@ -60,7 +60,12 @@ jobs:
       - name: Load Custom Settings
         run: |
           cp -r ${ETC_URL} openwrt/files
-    
+
+      - name: Changing File Permissions
+        run: |
+          cd openwrt/
+          chmod +x files/etc/uci-defaults/99-default-js
+          
       - name: Load custom feeds
         run: |
           [[ -f "${FEEDS_CONF}" ]] && cp -f ${FEEDS_CONF} openwrt/feeds.conf.default
