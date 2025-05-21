@@ -5,6 +5,5 @@ config global
 	option blur_dark '0'
 	option transparency '0.3'
 	option transparency_dark '0.3'
-	option mode 'normal'
-	option online_wallpaper 'bing'
-
+	option mode 'dark'
+	option online_wallpaper 'none'
