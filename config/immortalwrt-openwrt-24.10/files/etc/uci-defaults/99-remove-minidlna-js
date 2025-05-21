@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Remove the miniDLNA JS status file
+rm -f /www/luci-static/resources/view/status/include/80_minidlna.js
+
+exit 0
