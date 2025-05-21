@@ -81,7 +81,6 @@ return baseclass.extend({
 
         var fields = [
             _('Firmware'), 'XXXXXXXXXX',
-            _('Hostname'),         boardinfo.hostname,
             _('Model'), boardinfo.model + cpubench.cpubench,
             _('Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description : ''),
             _('Kernel'), boardinfo.kernel,
