@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
 
 env:
-  ETC_URL:  config/immortalwrt-openwrt-24.10/files
+  ETC_URL:  config/immortalwrt-openwrt-24.10.1/files
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_TAG: v24.10.1
-  FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
-  CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
-  PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10/01_path.sh
-  PATH_SCRIPT_02: config/immortalwrt-openwrt-24.10/02_path.sh
+  FEEDS_CONF: config/immortalwrt-openwrt-24.10.1/feeds.conf.default
+  CONFIG_FILE: config/immortalwrt-openwrt-24.10.1/.config
+  PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10.1/01_path.sh
+  PATH_SCRIPT_02: config/immortalwrt-openwrt-24.10.1/02_path.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
