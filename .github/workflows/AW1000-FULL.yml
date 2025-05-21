@@ -6,14 +6,13 @@ on:
   workflow_dispatch:
 
 env:
-  ETC_URL: https://github.com/aNzTikTok/etc.git
+  ETC_URL:  config/immortalwrt-openwrt-24.10/files
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
   CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
   PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10/01_path.sh
   PATH_SCRIPT_02: config/immortalwrt-openwrt-24.10/02_path.sh
-  # PATH_SCRIPT_03: config/immortalwrt-openwrt-24.10/03_path.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -60,18 +59,7 @@ jobs:
 
       - name: Load Custom Settings
         run: |
-          cd openwrt
-          mkdir files
-          cd files
-          git clone ${ETC_URL}
-
-      - name: Add path Passwall2
-        run: |
-          cd openwrt
-          mkdir -p files/etc/uci-defaults
-          cd files/etc/uci-defaults
-          wget -q https://raw.githubusercontent.com/aNzTikTok/ImmortalWrt-nss/main/path/99-passwall2
-          chmod +x 99-passwall2
+          cp -r ${ETC_URL} openwrt/files
     
       - name: Load custom feeds
         run: |
