@@ -3,4 +3,10 @@
 # Remove the miniDLNA JS status file
 rm -f /www/luci-static/resources/view/status/include/80_minidlna.js
 
+# Remove the immortalwrt_custom source line from opkg feeds
+sed -i '/immortalwrt_custom/d' /etc/opkg/customfeeds.conf
+
+# Optional: Also remove from feeds.conf if present
+sed -i '/immortalwrt_custom/d' /etc/opkg/distfeeds.conf
+
 exit 0
