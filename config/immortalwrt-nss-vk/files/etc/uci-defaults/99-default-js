@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Remove the miniDLNA JS status file
+rm -f /www/luci-static/resources/view/status/include/80_minidlna.js
+
+# Remove the immortalwrt_custom source line from opkg feeds
+sed -i '/immortalwrt_custom/d' /etc/opkg/customfeeds.conf
+
+# Optional: Also remove from feeds.conf if present
+sed -i '/immortalwrt_custom/d' /etc/opkg/distfeeds.conf
+
+# Ensure the PassWall2 init script is executable
+chmod +x /etc/init.d/passwall2
+
+# Enable PassWall2 to start at boot
+/etc/init.d/passwall2 enable
+/etc/init.d/passwall2 restart
+uci set passwall2.@global_forwarding[0].tcp_redir_ports='1:65535'
+uci commit passwall2
+sed -i '/^exit 0/i sleep 25;/etc/init.d/passwall2 restart' /etc/rc.local
+
+exit 0
