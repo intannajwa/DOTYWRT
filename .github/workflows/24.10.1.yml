@@ -1,0 +1,185 @@
+name: AW1000-24.10.1
+
+on:
+  schedule:
+    - cron: '0 20 * * *'  # 04 AM MALAYSIA TIME
+  workflow_dispatch:
+
+env:
+  ETC_URL:  config/immortalwrt-openwrt-24.10/files
+  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
+  REPO_TAG: v24.10.1
+  FEEDS_CONF: config/immortalwrt-openwrt-24.10/feeds.conf.default
+  CONFIG_FILE: config/immortalwrt-openwrt-24.10/.config
+  PATH_SCRIPT_01: config/immortalwrt-openwrt-24.10/01_path.sh
+  PATH_SCRIPT_02: config/immortalwrt-openwrt-24.10/02_path.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
+  TZ: Asia/Kuala_Lumpur
+  DEVICE_NAME: AW1000
+  FILE_DATE: $(date +'%Y%m%d')
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Initialization environment
+        id: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
+          sudo -E apt-get -y update
+          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+          sudo -E apt-get -y install $(curl -fsSL https://is.gd/depend_ubuntu2204_openwrt)
+          sudo -E systemctl daemon-reload
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          sudo mkdir -p /workdir
+          sudo chown ${USER}:${GROUPS} /workdir
+          sudo timedatectl set-timezone "${TZ}"
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Clone source code [immortalwrt-openwrt-24.10]
+        id: codes
+        working-directory: /workdir
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone -q --single-branch --depth=1 --branch=${REPO_TAG} ${REPO_URL} openwrt
+          ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Load Custom Settings
+        run: |
+          cp -r ${ETC_URL} openwrt/files
+    
+      - name: Load custom feeds
+        run: |
+          [[ -f "${FEEDS_CONF}" ]] && cp -f ${FEEDS_CONF} openwrt/feeds.conf.default
+          chmod +x ${PATH_SCRIPT_01}
+          cd openwrt/
+          ${GITHUB_WORKSPACE}/${PATH_SCRIPT_01}
+
+      - name: Update feeds
+        run: cd openwrt/ && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt/ && ./scripts/feeds install -a
+
+      - name: Load custom configuration
+        run: |
+          [[ -d "files" ]] && mv -f files openwrt/files
+          [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+          chmod +x ${PATH_SCRIPT_02}
+          cd openwrt/
+          ${GITHUB_WORKSPACE}/${PATH_SCRIPT_02}
+                  
+      - name: Show loaded target device
+        run: |
+          if grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" openwrt/.config; then
+              echo "✅ AW1000 target device is correctly loaded in .config"
+          else
+              echo "❌ AW1000 target device is NOT set in .config"
+              exit 1
+          fi
+
+
+      - name: Download package
+        id: package
+        run: |
+          cd openwrt/
+          make defconfig
+          grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" .config || exit 1
+          make download -j$(nproc)
+          find dl -size -1024c -exec rm -f {} \;
+          
+      - name: Show remaining files
+        run: ls -R
+
+      - name: Compile the OpenWrt
+        id: compile
+        run: |
+          cd openwrt/
+          grep -q "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_arcadyan_aw1000=y" .config || exit 1
+          echo -e "$(nproc) thread compile"
+          make -j$(nproc) || make -j$(nproc) V=s
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Check space usage
+        if: (!cancelled())
+        run: df -hT
+
+      - name: Upload bin directory
+        uses: actions/upload-artifact@main
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        with:
+          name: OpenWrt_bin_${{ env.DEVICE_NAME }}_${{ env.FILE_DATE }}
+          path: openwrt/bin
+
+      - name: Organize files
+        id: organize
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        run: |
+          cd openwrt/bin/targets/*/*
+          rm -rf packages
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "status=success" >> "$GITHUB_OUTPUT"
+
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@main
+        if: steps.organize.outputs.status == 'success' && !cancelled()
+        with:
+          name: OpenWrt_firmware_${{ env.DEVICE_NAME }}_${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}
+
+      - name: Generate release tag
+        id: tag
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        run: |
+          echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> "$GITHUB_OUTPUT"
+          echo "status=success" >> "$GITHUB_OUTPUT"
+          echo "**Generated by**: GitHub Actions" >> release.txt
+          echo "**Device**: $DEVICE_NAME" >> release.txt
+          echo "**Branch**: $REPO_TAG" >> release.txt
+          echo "**Date:** $(date)" >> release.txt
+          echo >> release.txt
+          echo "This firmware is based on ImmortalWRT and has been built specifically for the Arcadyan AW1000 router. It includes a set of basic applications to provide essential functionality while keeping the system lightweight and efficient." >> release.txt
+          echo "### WiFi Information" >> release.txt
+          echo "- **SSID**         : DOTYWRT" >> release.txt
+          echo "- **Password**     : dotycat.com" >> release.txt
+          echo "- **Admin Access** : 192.168.1.1" >> release.txt
+          echo "- **Username**     : root" >> release.txt
+          echo "- **Password**     : - " >> release.txt
+          echo >> release.txt
+          echo "### ⚠️ **Important Note**": >> release.txt
+          echo "Please use this firmware at your own risk. Flashing custom firmware can potentially brick your device if not done properly. The developers are not responsible for any damage or data loss that may occur." >> release.txt
+         
+
+      - name: Upload firmware to release
+        uses: softprops/action-gh-release@v1
+        if: steps.tag.outputs.status == 'success' && !cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+
+      # --- Clean up old artifacts ---
+      - name: Delete old Releases and Workflows
+        uses: ophub/delete-releases-workflows@main
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_releases: true           # enable release cleanup
+          releases_keep_latest: 3         # keep only the latest 3 releases
+          delete_tags: false              # keep associated tags (set true to remove)
+          delete_workflows: true          # continue cleaning workflow runs
+          workflows_keep_day: 0           # keep no workflow logs (immediate cleanup)
