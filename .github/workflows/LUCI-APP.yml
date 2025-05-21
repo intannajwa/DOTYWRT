@@ -1,4 +1,4 @@
-name: Compile luci-app-mttl
+name: Compile luci APP
 
 on:
   workflow_dispatch:
