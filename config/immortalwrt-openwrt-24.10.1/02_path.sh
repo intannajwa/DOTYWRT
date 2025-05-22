@@ -8,7 +8,7 @@ curl -o feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/sta
 
 ## PATH
 
-export FW_WRT_CC="DOTYWRT V1.2 BY Dotycat.com"
+export FW_WRT_CC="DOTYWRT V1.3 BY Dotycat.com"
 sed -i "s/XXXXXXXXXX/$FW_WRT_CC/g" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 
 echo "Customization script completed successfully!"
