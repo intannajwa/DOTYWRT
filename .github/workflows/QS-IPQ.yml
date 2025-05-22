@@ -13,6 +13,7 @@ env:
   CONFIG_FILE: config/openwrt-ipq/.config
   PATH_SCRIPT_01: config/openwrt-ipq/01_path.sh
   PATH_SCRIPT_02: config/openwrt-ipq/02_path.sh
+  PATH_MK: config/openwrt-ipq/version.mk
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -66,6 +67,10 @@ jobs:
           cd openwrt/
           chmod +x files/etc/uci-defaults/99-default-js
           
+      - name: Update MK Path
+        run: |
+          cp ${PATH_MK} openwrt/include/version.mk
+      
       - name: Load custom feeds
         run: |
           [[ -f "${FEEDS_CONF}" ]] && cp -f ${FEEDS_CONF} openwrt/feeds.conf.default
