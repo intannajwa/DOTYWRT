@@ -1,0 +1,6 @@
+
+config irqbalance 'irqbalance'
+	option enabled '1'
+	option deepestcache '2'
+	option interval '10'
+
