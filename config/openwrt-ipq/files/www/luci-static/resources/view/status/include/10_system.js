@@ -80,7 +80,7 @@ return baseclass.extend({
         }
 
         var fields = [
-            _('Firmware'), 'DOTYWRT V1.0 - IPQ-NSS',
+            _('Firmware'), 'DOTYWRT V1.0.1 - IPQ-NSS',
             _('Model'), boardinfo.model,
             _('Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description : ''),
             _('Kernel'), boardinfo.kernel,
