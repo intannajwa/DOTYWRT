@@ -5,6 +5,7 @@ config defaults
 	option forward 'REJECT'
 	option synflood_protect '1'
 	option fullcone '1'
+	option flow_offloading '1'
 
 config zone
 	option name 'lan'
@@ -119,6 +120,14 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
+config include 'openclash'
+	option type 'script'
+	option path '/var/etc/openclash.include'
+
+config include 'qcanssecm'
+	option type 'script'
+	option path '/etc/firewall.d/qca-nss-ecm'
+
 config include 'passwall'
 	option type 'script'
 	option path '/var/etc/passwall.include'
@@ -138,8 +147,3 @@ config include 'passwall2_server'
 	option type 'script'
 	option path '/var/etc/passwall2_server.include'
 	option reload '1'
-
-config include 'openclash'
-	option type 'script'
-	option path '/var/etc/openclash.include'
-
