@@ -8,6 +8,7 @@ sed -i '/custom_app/d' /etc/opkg/customfeeds.conf
 
 # Optional: Also remove from feeds.conf if present
 sed -i '/custom_app/d' /etc/opkg/distfeeds.conf
+sed -i '/passwall/d' /etc/opkg/distfeeds.conf
 
 # Ensure the PassWall2 init script is executable
 chmod +x /etc/init.d/passwall2
