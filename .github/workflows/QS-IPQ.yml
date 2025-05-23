@@ -189,7 +189,7 @@ jobs:
         with:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           delete_releases: true           # enable release cleanup
-          releases_keep_latest: 3         # keep only the latest 3 releases
+          releases_keep_latest: 5         # keep only the latest 3 releases
           delete_tags: false              # keep associated tags (set true to remove)
           delete_workflows: true          # continue cleaning workflow runs
           workflows_keep_day: 0           # keep no workflow logs (immediate cleanup)
