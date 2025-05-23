@@ -7,5 +7,5 @@ src-git sqm_scripts_nss https://github.com/qosmio/sqm-scripts-nss.git
 src-git custom_app https://github.com/xBinPDA/custom-app.git;main
 # src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main
-src-git custapp https://github.com/xBinPDA/custom-package.git
+# src-git custapp https://github.com/xBinPDA/custom-package.git
 src-git passwall https://github.com/xBinPDA/openwrt-passwall.git;luci-nodns
