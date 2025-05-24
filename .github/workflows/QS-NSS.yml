@@ -2,7 +2,7 @@ name: AW1000-QS-IPQ
 
 on:
   schedule:
-    - cron: '0 20 * * *'  # 04 AM MALAYSIA TIME
+    - cron: '0 20 * * *'  # 04 AM MALAYSIA TIMEx
   workflow_dispatch:
 
 env:
